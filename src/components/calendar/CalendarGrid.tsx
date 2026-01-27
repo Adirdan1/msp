@@ -37,14 +37,7 @@ export function CalendarGrid({ habits, logs, days = 14, onLogProgress }: Calenda
         return { status, percentage, progress, target };
     };
 
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'success': return '✓';
-            case 'partial': return '◐';
-            case 'missed': return '✗';
-            default: return '';
-        }
-    };
+
 
     const formatDayHeader = (date: string) => {
         const d = new Date(date);
@@ -168,16 +161,12 @@ export function CalendarGrid({ habits, logs, days = 14, onLogProgress }: Calenda
                                         style={{ cursor: isFuture ? 'default' : 'pointer' }}
                                     >
                                         {status !== 'future' && status !== 'empty' && (
-                                            <div className={`status-indicator ${status}`}>
-                                                {getStatusIcon(status)}
+                                            <div className={`status-indicator ${status}`} style={{ width: 'auto', minWidth: '28px', padding: '0 4px', fontSize: '10px' }}>
+                                                {Math.round(percentage)}%
                                             </div>
                                         )}
                                         {status === 'empty' && (
                                             <div className="status-indicator empty">+</div>
-                                        )}
-                                        {/* Progress percentage overlay */}
-                                        {status !== 'future' && percentage > 0 && percentage < 100 && (
-                                            <div className="cell-progress-text">{percentage}%</div>
                                         )}
                                     </div>
                                 );
