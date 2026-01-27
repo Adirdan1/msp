@@ -440,6 +440,10 @@ body {
   color: var(--color-text-primary);
 }
 
+.btn:active {
+  transform: scale(0.95);
+}
+
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;

@@ -137,18 +137,12 @@ export default function HomePage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {!habit.isCompleted && (
-                    <button
-                      onClick={() => logProgress(habit.id, habit.target / 4)}
-                      className="btn btn-sm btn-secondary font-mono"
-                      title={`Add ${(habit.target / 4).toFixed(1)}`}
-                    >
-                      +{(habit.target / 4).toFixed(1)}
-                    </button>
-                  )}
-
                   <button
-                    onClick={() => !habit.isCompleted && quickComplete(habit.id)}
+                    onClick={() => {
+                      if (!habit.isCompleted) {
+                        logProgress(habit.id, habit.target / 4);
+                      }
+                    }}
                     className={`btn btn-sm font-mono font-bold animate-pop ${habit.percentage < 50 && !habit.isCompleted ? 'btn-secondary' : ''}`}
                     key={`${habit.id}-${Math.round(habit.percentage)}`}
                     style={{
@@ -158,12 +152,14 @@ export default function HomePage() {
                           ? 'var(--color-warning)'
                           : undefined,
                       color: habit.percentage >= 50 ? 'white' : undefined,
-                      minWidth: '56px',
-                      pointerEvents: habit.isCompleted ? 'none' : 'auto'
+                      minWidth: '60px',
+                      pointerEvents: habit.isCompleted ? 'none' : 'auto',
+                      transition: 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
                     }}
+                    title={habit.isCompleted ? 'Completed!' : `Click to add ${(habit.target / 4).toFixed(1)}`}
                   >
                     {habit.percentage >= 100 ? (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="animate-pop">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="animate-pop">
                         <polyline points="20,6 9,17 4,12" />
                       </svg>
                     ) : (
