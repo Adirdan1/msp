@@ -137,38 +137,39 @@ export default function HomePage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {!habit.isCompleted ? (
-                    <>
-                      <button
-                        onClick={() => logProgress(habit.id, habit.target / 4)}
-                        className="btn btn-sm btn-secondary"
-                      >
-                        +{(habit.target / 4).toFixed(1)}
-                      </button>
-                      <button
-                        onClick={() => quickComplete(habit.id)}
-                        className="btn btn-sm btn-success"
-                      >
-                        Done
-                      </button>
-                    </>
-                  ) : (
-                    <span
-                      className="btn btn-sm text-white font-mono font-bold"
-                      style={{
-                        pointerEvents: 'none',
-                        background: habit.percentage >= 100
-                          ? 'var(--color-success)'
-                          : habit.percentage >= 50
-                            ? 'var(--color-warning)'
-                            : 'var(--color-danger)',
-                        minWidth: '52px',
-                        textAlign: 'center'
-                      }}
+                  {!habit.isCompleted && (
+                    <button
+                      onClick={() => logProgress(habit.id, habit.target / 4)}
+                      className="btn btn-sm btn-secondary font-mono"
+                      title={`Add ${(habit.target / 4).toFixed(1)}`}
                     >
-                      {Math.round(habit.percentage)}%
-                    </span>
+                      +{(habit.target / 4).toFixed(1)}
+                    </button>
                   )}
+
+                  <button
+                    onClick={() => !habit.isCompleted && quickComplete(habit.id)}
+                    className={`btn btn-sm font-mono font-bold animate-pop ${habit.percentage < 50 && !habit.isCompleted ? 'btn-secondary' : ''}`}
+                    key={`${habit.id}-${Math.round(habit.percentage)}`}
+                    style={{
+                      background: habit.percentage >= 100
+                        ? 'var(--color-success)'
+                        : habit.percentage >= 50
+                          ? 'var(--color-warning)'
+                          : undefined,
+                      color: habit.percentage >= 50 ? 'white' : undefined,
+                      minWidth: '56px',
+                      pointerEvents: habit.isCompleted ? 'none' : 'auto'
+                    }}
+                  >
+                    {habit.percentage >= 100 ? (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="animate-pop">
+                        <polyline points="20,6 9,17 4,12" />
+                      </svg>
+                    ) : (
+                      `${Math.round(habit.percentage)}%`
+                    )}
+                  </button>
                 </div>
               </div>
             ))}
