@@ -17,7 +17,12 @@ export function calculateHabitProgress(
             habit.goalPeriodDays;
 
     // Get logs for the current period
-    const periodStart = getDaysAgo(periodDays - 1);
+    // Get logs for the current period relative to referenceDate
+    const refDateObj = new Date(referenceDate);
+    const startObj = new Date(refDateObj);
+    startObj.setDate(refDateObj.getDate() - (periodDays - 1));
+    const periodStart = startObj.toISOString().split('T')[0];
+
     const periodLogs = logs.filter(
         l => l.habitId === habit.id && l.date >= periodStart && l.date <= referenceDate
     );
