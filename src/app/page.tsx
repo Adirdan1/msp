@@ -128,8 +128,8 @@ export default function HomePage() {
                   <div className="habit-progress-bar">
                     <div
                       className={`habit-progress-fill ${habit.percentage >= 100 ? 'success' :
-                          habit.percentage >= 50 ? 'partial' :
-                            'danger'
+                        habit.percentage >= 50 ? 'partial' :
+                          'danger'
                         }`}
                       style={{ width: `${Math.min(habit.percentage, 100)}%` }}
                     />
@@ -153,10 +153,20 @@ export default function HomePage() {
                       </button>
                     </>
                   ) : (
-                    <span className="btn btn-sm bg-success text-white" style={{ pointerEvents: 'none' }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <polyline points="20,6 9,17 4,12" />
-                      </svg>
+                    <span
+                      className="btn btn-sm text-white font-mono font-bold"
+                      style={{
+                        pointerEvents: 'none',
+                        background: habit.percentage >= 100
+                          ? 'var(--color-success)'
+                          : habit.percentage >= 50
+                            ? 'var(--color-warning)'
+                            : 'var(--color-danger)',
+                        minWidth: '52px',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {Math.round(habit.percentage)}%
                     </span>
                   )}
                 </div>
