@@ -160,11 +160,26 @@ export function CalendarGrid({ habits, logs, days = 14, onLogProgress }: Calenda
                                         title={isFuture ? 'Future date' : `${habit.name} - ${formatDate(date, 'medium')}\n${progress}/${habit.goalAmount} ${habit.unit} (${percentage}%)\nClick to add +${quickAmount}`}
                                         style={{ cursor: isFuture ? 'default' : 'pointer' }}
                                     >
-                                        {status !== 'future' && status !== 'empty' && (
-                                            <div className={`status-indicator ${status}`} style={{ width: 'auto', minWidth: '28px', padding: '0 4px', fontSize: '10px' }}>
+                                        {status === 'success' ? (
+                                            <div className="status-indicator success" style={{ width: 'auto', minWidth: '28px', padding: '0 4px' }}>
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                                    <polyline points="20,6 9,17 4,12" />
+                                                </svg>
+                                            </div>
+                                        ) : status !== 'future' && status !== 'empty' ? (
+                                            <div
+                                                className={`status-indicator ${status}`}
+                                                style={{
+                                                    width: 'auto',
+                                                    minWidth: '28px',
+                                                    padding: '0 4px',
+                                                    fontSize: '10px',
+                                                    opacity: status === 'missed' ? 0.7 : 1
+                                                }}
+                                            >
                                                 {Math.round(percentage)}%
                                             </div>
-                                        )}
+                                        ) : null}
                                         {status === 'empty' && (
                                             <div className="status-indicator empty">+</div>
                                         )}
