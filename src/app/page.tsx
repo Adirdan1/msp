@@ -19,33 +19,36 @@ export default function HomePage() {
   } = useHabits();
 
   const [showAddModal, setShowAddModal] = useState(false);
-  const [lastLogId, setLastLogId] = useState<string | null>(null);
+  const [undoStack, setUndoStack] = useState<string[]>([]);
   const [showUndo, setShowUndo] = useState(false);
 
-  // Auto-hide undo after 5 seconds
+  // Auto-hide undo after 8 seconds of no activity
   useEffect(() => {
-    if (showUndo) {
+    if (showUndo && undoStack.length > 0) {
       const timer = setTimeout(() => {
         setShowUndo(false);
-        setLastLogId(null);
-      }, 5000);
+        setUndoStack([]);
+      }, 8000);
       return () => clearTimeout(timer);
     }
-  }, [showUndo]);
+  }, [showUndo, undoStack.length]);
 
   const handleLogProgress = (habitId: string, amount: number) => {
     const log = logProgress(habitId, amount);
     if (log) {
-      setLastLogId(log.id);
+      setUndoStack(prev => [...prev, log.id]);
       setShowUndo(true);
     }
   };
 
   const handleUndo = () => {
-    if (lastLogId) {
-      deleteLogEntry(lastLogId);
-      setLastLogId(null);
-      setShowUndo(false);
+    if (undoStack.length > 0) {
+      const lastId = undoStack[undoStack.length - 1];
+      deleteLogEntry(lastId);
+      setUndoStack(prev => prev.slice(0, -1));
+      if (undoStack.length <= 1) {
+        setShowUndo(false);
+      }
     }
   };
 
@@ -241,7 +244,9 @@ export default function HomePage() {
             gap: '12px'
           }}
         >
-          <span className="text-sm">Progress logged</span>
+          <span className="text-sm">
+            {undoStack.length} action{undoStack.length > 1 ? 's' : ''} logged
+          </span>
           <button
             onClick={handleUndo}
             className="btn btn-sm"
@@ -251,7 +256,7 @@ export default function HomePage() {
               fontWeight: 600
             }}
           >
-            Undo
+            Undo ({undoStack.length})
           </button>
         </div>
       )}
