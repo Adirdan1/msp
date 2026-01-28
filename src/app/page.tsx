@@ -176,6 +176,7 @@ export default function HomePage() {
                         handleLogProgress(habit.id, habit.target / 4);
                       }
                     }}
+                    disabled={habit.isCompleted}
                     className={`btn btn-sm font-mono font-bold animate-pop ${habit.percentage < 50 && !habit.isCompleted ? 'btn-secondary' : ''}`}
                     key={`${habit.id}-${Math.round(habit.percentage)}`}
                     style={{
@@ -186,10 +187,11 @@ export default function HomePage() {
                           : undefined,
                       color: habit.percentage >= 50 ? 'white' : undefined,
                       minWidth: '60px',
-                      pointerEvents: habit.isCompleted ? 'none' : 'auto',
+                      cursor: habit.isCompleted ? 'default' : 'pointer',
+                      opacity: habit.isCompleted ? 1 : undefined,
                       transition: 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
                     }}
-                    title={habit.isCompleted ? 'Completed!' : `Click to add ${(habit.target / 4).toFixed(1)}`}
+                    title={habit.isCompleted ? 'Completed - Max reached!' : `Click to add ${(habit.target / 4).toFixed(1)}`}
                   >
                     {habit.percentage >= 100 ? (
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="animate-pop">
