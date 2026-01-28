@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useHabits } from '@/lib/hooks/useHabits';
 import { AddHabitModal } from '@/components/habits/AddHabitModal';
 import { BottomNav } from '@/components/ui/BottomNav';
@@ -15,9 +15,39 @@ export default function HomePage() {
     logProgress,
     quickComplete,
     getTodayProgress,
+    deleteLogEntry,
   } = useHabits();
 
   const [showAddModal, setShowAddModal] = useState(false);
+  const [lastLogId, setLastLogId] = useState<string | null>(null);
+  const [showUndo, setShowUndo] = useState(false);
+
+  // Auto-hide undo after 5 seconds
+  useEffect(() => {
+    if (showUndo) {
+      const timer = setTimeout(() => {
+        setShowUndo(false);
+        setLastLogId(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showUndo]);
+
+  const handleLogProgress = (habitId: string, amount: number) => {
+    const log = logProgress(habitId, amount);
+    if (log) {
+      setLastLogId(log.id);
+      setShowUndo(true);
+    }
+  };
+
+  const handleUndo = () => {
+    if (lastLogId) {
+      deleteLogEntry(lastLogId);
+      setLastLogId(null);
+      setShowUndo(false);
+    }
+  };
 
   const todayProgress = getTodayProgress();
   const completedCount = habitsWithProgress.filter(h => h.isCompleted).length;
@@ -140,7 +170,7 @@ export default function HomePage() {
                   <button
                     onClick={() => {
                       if (!habit.isCompleted) {
-                        logProgress(habit.id, habit.target / 4);
+                        handleLogProgress(habit.id, habit.target / 4);
                       }
                     }}
                     className={`btn btn-sm font-mono font-bold animate-pop ${habit.percentage < 50 && !habit.isCompleted ? 'btn-secondary' : ''}`}
@@ -195,6 +225,36 @@ export default function HomePage() {
         onClose={() => setShowAddModal(false)}
         onAdd={addHabit}
       />
+
+      {/* Undo Toast */}
+      {showUndo && (
+        <div
+          className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 animate-slide-up"
+          style={{
+            background: 'var(--color-card)',
+            border: '1px solid var(--color-grid-line)',
+            borderRadius: '12px',
+            padding: '12px 20px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
+          }}
+        >
+          <span className="text-sm">Progress logged</span>
+          <button
+            onClick={handleUndo}
+            className="btn btn-sm"
+            style={{
+              background: 'var(--color-warning)',
+              color: 'white',
+              fontWeight: 600
+            }}
+          >
+            Undo
+          </button>
+        </div>
+      )}
 
       <BottomNav />
     </>
