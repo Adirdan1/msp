@@ -12,10 +12,15 @@ interface LogEntryModalProps {
     date: string;
     logs: HabitLog[];
     onLogProgress: (habitId: string, amount: number, date: string) => void;
+    onDeleteLog?: (logId: string) => void;
+    onUpdateLog?: (logId: string, newAmount: number) => void;
 }
 
-export function LogEntryModal({ isOpen, onClose, habit, date, logs, onLogProgress }: LogEntryModalProps) {
+export function LogEntryModal({ isOpen, onClose, habit, date, logs, onLogProgress, onDeleteLog, onUpdateLog }: LogEntryModalProps) {
     const [customAmount, setCustomAmount] = useState('');
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [editingLogId, setEditingLogId] = useState<string | null>(null);
+    const [editAmount, setEditAmount] = useState('');
 
     if (!isOpen || !habit) return null;
 
@@ -23,10 +28,14 @@ export function LogEntryModal({ isOpen, onClose, habit, date, logs, onLogProgres
     const { progress, target, percentage } = calculateHabitProgress(habit, dayLogs, date);
     const quickAmounts = QUICK_AMOUNTS[habit.unit] || QUICK_AMOUNTS['default'];
 
+    const showSuccess = (message: string) => {
+        setSuccessMessage(message);
+        setTimeout(() => setSuccessMessage(null), 2000);
+    };
+
     const handleQuickAdd = (amount: number) => {
         onLogProgress(habit.id, amount, date);
-        // Brief delay to show the update before closing
-        setTimeout(() => onClose(), 300);
+        showSuccess(`Added ${amount} ${habit.unit}!`);
     };
 
     const handleCustomAdd = () => {
@@ -34,8 +43,35 @@ export function LogEntryModal({ isOpen, onClose, habit, date, logs, onLogProgres
         if (!isNaN(amount) && amount > 0) {
             onLogProgress(habit.id, amount, date);
             setCustomAmount('');
-            setTimeout(() => onClose(), 300);
+            showSuccess(`Added ${amount} ${habit.unit}!`);
         }
+    };
+
+    const handleDeleteLog = (logId: string, amount: number) => {
+        if (onDeleteLog) {
+            onDeleteLog(logId);
+            showSuccess(`Removed ${amount} ${habit.unit}`);
+        }
+    };
+
+    const handleStartEdit = (log: HabitLog) => {
+        setEditingLogId(log.id);
+        setEditAmount(log.amount.toString());
+    };
+
+    const handleSaveEdit = (logId: string) => {
+        const newAmount = parseFloat(editAmount);
+        if (!isNaN(newAmount) && newAmount > 0 && onUpdateLog) {
+            onUpdateLog(logId, newAmount);
+            setEditingLogId(null);
+            setEditAmount('');
+            showSuccess(`Updated to ${newAmount} ${habit.unit}!`);
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setEditingLogId(null);
+        setEditAmount('');
     };
 
     const getStatusColor = () => {
@@ -61,6 +97,16 @@ export function LogEntryModal({ isOpen, onClose, habit, date, logs, onLogProgres
                 </div>
 
                 <div className="modal-body">
+                    {/* Success Message */}
+                    {successMessage && (
+                        <div
+                            className="mb-4 py-2 px-4 rounded-lg text-center text-sm font-medium animate-slide-up"
+                            style={{ background: 'var(--color-success)', color: 'white' }}
+                        >
+                            ✓ {successMessage}
+                        </div>
+                    )}
+
                     {/* Current Progress */}
                     <div className="stat-card mb-4">
                         <div className="flex items-center justify-between mb-3">
@@ -97,7 +143,7 @@ export function LogEntryModal({ isOpen, onClose, habit, date, logs, onLogProgres
                                 onClick={() => handleQuickAdd(amount)}
                                 className="btn btn-secondary"
                             >
-                                +{amount} {habit.unit}
+                                +{amount}
                             </button>
                         ))}
                     </div>
@@ -123,17 +169,74 @@ export function LogEntryModal({ isOpen, onClose, habit, date, logs, onLogProgres
                         </button>
                     </div>
 
-                    {/* Today's Logs */}
+                    {/* Logged Entries with Edit/Delete */}
                     {dayLogs.length > 0 && (
                         <div className="mt-6">
-                            <div className="section-title">Logged Today</div>
+                            <div className="section-title">Entries ({dayLogs.length})</div>
                             <div className="space-y-2">
-                                {dayLogs.map((log, i) => (
+                                {dayLogs.map((log) => (
                                     <div key={log.id} className="flex items-center justify-between py-2 px-3 bg-[var(--color-bg-secondary)] rounded-md">
-                                        <span className="font-mono">{log.amount} {habit.unit}</span>
-                                        <span className="text-muted text-xs">
-                                            {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </span>
+                                        {editingLogId === log.id ? (
+                                            <>
+                                                <input
+                                                    type="number"
+                                                    value={editAmount}
+                                                    onChange={(e) => setEditAmount(e.target.value)}
+                                                    className="input"
+                                                    style={{ width: '80px' }}
+                                                    step="0.1"
+                                                    min="0"
+                                                    autoFocus
+                                                />
+                                                <div className="flex gap-1">
+                                                    <button
+                                                        onClick={() => handleSaveEdit(log.id)}
+                                                        className="btn btn-sm btn-success"
+                                                        title="Save"
+                                                    >
+                                                        ✓
+                                                    </button>
+                                                    <button
+                                                        onClick={handleCancelEdit}
+                                                        className="btn btn-sm btn-ghost"
+                                                        title="Cancel"
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div>
+                                                    <span className="font-mono font-medium">{log.amount} {habit.unit}</span>
+                                                    <span className="text-muted text-xs ml-2">
+                                                        {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-1">
+                                                    {onUpdateLog && (
+                                                        <button
+                                                            onClick={() => handleStartEdit(log)}
+                                                            className="btn btn-sm btn-ghost"
+                                                            title="Edit"
+                                                            style={{ color: 'var(--color-warning)' }}
+                                                        >
+                                                            ✎
+                                                        </button>
+                                                    )}
+                                                    {onDeleteLog && (
+                                                        <button
+                                                            onClick={() => handleDeleteLog(log.id, log.amount)}
+                                                            className="btn btn-sm btn-ghost"
+                                                            title="Delete"
+                                                            style={{ color: 'var(--color-danger)' }}
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 ))}
                             </div>

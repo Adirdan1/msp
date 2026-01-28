@@ -3,17 +3,23 @@
 import { useState, useEffect } from 'react';
 import { useHabits } from '@/lib/hooks/useHabits';
 import { CalendarGrid } from '@/components/calendar/CalendarGrid';
+import { LogEntryModal } from '@/components/calendar/LogEntryModal';
 import { BottomNav } from '@/components/ui/BottomNav';
 import { getToday } from '@/lib/utils/dates';
-import { addLog } from '@/lib/storage';
+import { addLog, deleteLog, updateLog } from '@/lib/storage';
 import { generateId } from '@/lib/utils/dates';
-import { HabitLog, QUICK_AMOUNTS } from '@/lib/types';
+import { Habit, HabitLog, QUICK_AMOUNTS } from '@/lib/types';
 
 export default function CalendarPage() {
     const { habits, logs, isLoading } = useHabits();
     const [days, setDays] = useState(14);
     const [localLogs, setLocalLogs] = useState<HabitLog[]>([]);
     const [logCount, setLogCount] = useState(0);
+
+    // Modal state
+    const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
+    const [selectedDate, setSelectedDate] = useState<string>('');
+    const [showModal, setShowModal] = useState(false);
 
     // Sync localLogs with logs from hook when they change
     useEffect(() => {
@@ -32,6 +38,30 @@ export default function CalendarPage() {
         // Update local state immediately for instant UI feedback
         setLocalLogs(prev => [...prev, newLog]);
         setLogCount(prev => prev + 1);
+    };
+
+    const handleDeleteLog = (logId: string) => {
+        deleteLog(logId);
+        setLocalLogs(prev => prev.filter(l => l.id !== logId));
+    };
+
+    const handleUpdateLog = (logId: string, newAmount: number) => {
+        updateLog(logId, { amount: newAmount });
+        setLocalLogs(prev => prev.map(l =>
+            l.id === logId ? { ...l, amount: newAmount } : l
+        ));
+    };
+
+    const handleOpenModal = (habit: Habit, date: string) => {
+        setSelectedHabit(habit);
+        setSelectedDate(date);
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setSelectedHabit(null);
+        setSelectedDate('');
     };
 
     if (isLoading) {
@@ -73,6 +103,7 @@ export default function CalendarPage() {
                     logs={localLogs}
                     days={days}
                     onLogProgress={handleLogProgress}
+                    onOpenModal={handleOpenModal}
                 />
 
                 {/* Summary Stats */}
@@ -98,6 +129,18 @@ export default function CalendarPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Log Entry Modal */}
+            <LogEntryModal
+                isOpen={showModal}
+                onClose={handleCloseModal}
+                habit={selectedHabit}
+                date={selectedDate}
+                logs={localLogs}
+                onLogProgress={handleLogProgress}
+                onDeleteLog={handleDeleteLog}
+                onUpdateLog={handleUpdateLog}
+            />
 
             <BottomNav />
         </>

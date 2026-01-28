@@ -10,9 +10,10 @@ interface CalendarGridProps {
     logs: HabitLog[];
     days?: number;
     onLogProgress: (habitId: string, amount: number, date: string) => void;
+    onOpenModal?: (habit: Habit, date: string) => void;
 }
 
-export function CalendarGrid({ habits, logs, days = 14, onLogProgress }: CalendarGridProps) {
+export function CalendarGrid({ habits, logs, days = 14, onLogProgress, onOpenModal }: CalendarGridProps) {
     const today = getToday();
     const startDate = getDaysAgo(days - 1);
     const dates = getDatesBetween(startDate, today);
@@ -136,7 +137,7 @@ export function CalendarGrid({ habits, logs, days = 14, onLogProgress }: Calenda
                                 >
                                     {habit.name.charAt(0).toUpperCase()}
                                 </span>
-                                <div style={{ minWidth: 0 }}>
+                                <div style={{ minWidth: 0, flex: 1 }}>
                                     <div style={{ fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                         {habit.name}
                                     </div>
@@ -144,6 +145,16 @@ export function CalendarGrid({ habits, logs, days = 14, onLogProgress }: Calenda
                                         +{quickAmount} {habit.unit}/click
                                     </div>
                                 </div>
+                                {onOpenModal && (
+                                    <button
+                                        onClick={() => onOpenModal(habit, today)}
+                                        className="btn btn-sm btn-ghost"
+                                        style={{ padding: '4px 8px', fontSize: '12px', color: 'var(--color-warning)' }}
+                                        title="Edit entries"
+                                    >
+                                        ✎
+                                    </button>
+                                )}
                             </div>
 
                             {dates.map(date => {
