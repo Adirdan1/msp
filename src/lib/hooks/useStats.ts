@@ -22,11 +22,10 @@ export function useStats(habits: Habit[], logs: HabitLog[]) {
         return statsMap;
     }, [habits, logs, period]);
 
-    // Get heatmap data (last 28 days for week/month view, more for year)
+    // Get heatmap data (always 28 days for good visualization)
     const heatmapData = useMemo(() => {
-        const days = period === 'year' ? 365 : period === 'month' ? 30 : 7;
-        return getHeatmapData(habits, logs, days);
-    }, [habits, logs, period]);
+        return getHeatmapData(habits, logs, 28);
+    }, [habits, logs]);
 
     // Get daily progress for the period
     const dailyProgressData = useMemo(() => {

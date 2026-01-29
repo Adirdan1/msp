@@ -116,6 +116,27 @@ body {
   line-height: 1.5;
 }
 
+/* Utility Classes */
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.text-success {
+  color: var(--color-success) !important;
+}
+
+.text-warning {
+  color: var(--color-warning) !important;
+}
+
+.text-danger {
+  color: var(--color-danger) !important;
+}
+
 /* ========================================
    Calendar Grid - Excel Style
    ======================================== */
