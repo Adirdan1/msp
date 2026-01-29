@@ -168,7 +168,7 @@ export default function SettingsPage() {
                     <div className="stat-card">
                         <div className="py-2">
                             <p className="font-medium">My Success Power</p>
-                            <p className="text-sm text-muted">Version 1.4.6</p>
+                            <p className="text-sm text-muted">Version 1.4.7</p>
                         </div>
                         <div className="py-2 border-t border-[var(--color-grid-line)]">
                             <p className="text-sm text-muted">
