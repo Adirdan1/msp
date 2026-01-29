@@ -620,6 +620,7 @@ body {
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
   z-index: 200;
+  touch-action: none;
 }
 
 .modal {
@@ -627,8 +628,9 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  max-height: calc(95vh - env(safe-area-inset-top));
-  max-height: calc(95dvh - env(safe-area-inset-top));
+  height: 85vh;
+  height: 85dvh;
+  max-height: calc(100vh - env(safe-area-inset-top) - 20px);
   background: var(--color-bg-secondary);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   z-index: 201;
@@ -646,6 +648,7 @@ body {
     transform: translate(-50%, -50%);
     max-width: 480px;
     width: calc(100% - 32px);
+    height: auto;
     max-height: 85vh;
     border-radius: var(--radius-xl);
     animation: scaleIn 200ms ease;
@@ -667,8 +670,7 @@ body {
 }
 
 .modal-body {
-  padding: var(--space-lg);
-  padding-bottom: calc(var(--space-lg) + env(safe-area-inset-bottom));
+  padding: var(--space-md) var(--space-lg);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
@@ -678,13 +680,10 @@ body {
 
 .modal-footer {
   padding: var(--space-md) var(--space-lg);
-  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
+  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom) + 8px);
   border-top: 1px solid var(--color-grid-line);
   flex-shrink: 0;
-}
-
-.modal-backdrop {
-  touch-action: none;
+  background: var(--color-bg-secondary);
 }
 
 /* ========================================
