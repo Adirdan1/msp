@@ -12,7 +12,7 @@ import { Habit, HabitLog, QUICK_AMOUNTS } from '@/lib/types';
 
 export default function CalendarPage() {
     const { habits, logs, isLoading } = useHabits();
-    const [days, setDays] = useState(14);
+    const [days, setDays] = useState(3);
     const [localLogs, setLocalLogs] = useState<HabitLog[]>([]);
     const [logCount, setLogCount] = useState(0);
 

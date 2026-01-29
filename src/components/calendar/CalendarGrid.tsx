@@ -163,6 +163,21 @@ export function CalendarGrid({ habits, logs, days = 14, onLogProgress, onOpenMod
                                 const isClicked = clickedCells.has(cellKey);
                                 const isFuture = status === 'future';
 
+                                // Format the progress display with unit
+                                const formatProgress = () => {
+                                    if (progress === 0) return '';
+                                    // Shorten unit for display
+                                    const shortUnit = habit.unit === 'steps' ? '' :
+                                        habit.unit === 'times' ? '' :
+                                            habit.unit === 'hours' ? 'h' :
+                                                habit.unit === 'min' ? 'm' :
+                                                    habit.unit === 'pages' ? 'p' :
+                                                        habit.unit === 'ml' ? 'ml' :
+                                                            habit.unit === 'L' ? 'L' :
+                                                                habit.unit.charAt(0);
+                                    return `${progress}${shortUnit}`;
+                                };
+
                                 return (
                                     <div
                                         key={date}
@@ -188,7 +203,7 @@ export function CalendarGrid({ habits, logs, days = 14, onLogProgress, onOpenMod
                                                     opacity: status === 'missed' ? 0.7 : 1
                                                 }}
                                             >
-                                                {Math.round(percentage)}%
+                                                {formatProgress()}
                                             </div>
                                         ) : null}
                                         {status === 'empty' && (
