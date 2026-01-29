@@ -671,6 +671,7 @@ body {
   padding-bottom: calc(var(--space-lg) + env(safe-area-inset-bottom));
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   flex: 1;
   min-height: 0;
 }
@@ -680,6 +681,10 @@ body {
   padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
   border-top: 1px solid var(--color-grid-line);
   flex-shrink: 0;
+}
+
+.modal-backdrop {
+  touch-action: none;
 }
 
 /* ========================================

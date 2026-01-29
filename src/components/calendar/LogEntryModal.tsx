@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Habit, HabitLog, QUICK_AMOUNTS } from '@/lib/types';
 import { formatDate } from '@/lib/utils/dates';
 import { calculateHabitProgress } from '@/lib/stats';
@@ -21,6 +21,25 @@ export function LogEntryModal({ isOpen, onClose, habit, date, logs, onLogProgres
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [editingLogId, setEditingLogId] = useState<string | null>(null);
     const [editAmount, setEditAmount] = useState('');
+
+    // Lock body scroll when modal is open (fixes iOS Safari background scroll issue)
+    useEffect(() => {
+        if (isOpen && habit) {
+            const scrollY = window.scrollY;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollY}px`;
+            document.body.style.width = '100%';
+            document.body.style.overflow = 'hidden';
+
+            return () => {
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
+                document.body.style.overflow = '';
+                window.scrollTo(0, scrollY);
+            };
+        }
+    }, [isOpen, habit]);
 
     if (!isOpen || !habit) return null;
 
