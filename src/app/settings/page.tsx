@@ -12,6 +12,7 @@ export default function SettingsPage() {
         theme: 'dark',
         hapticFeedback: true,
         notifications: false,
+        successThreshold: 80,
     });
     const [showConfirmDelete, setShowConfirmDelete] = useState<string | null>(null);
 
@@ -69,7 +70,7 @@ export default function SettingsPage() {
                     <div className="section-title">Preferences</div>
 
                     <div className="stat-card">
-                        <div className="flex items-center justify-between py-2">
+                        <div className="flex items-center justify-between py-2 border-b border-[var(--color-grid-line)] mb-4 pb-4">
                             <div>
                                 <p className="font-medium">Haptic Feedback</p>
                                 <p className="text-sm text-muted">Vibration on iOS devices</p>
@@ -88,6 +89,33 @@ export default function SettingsPage() {
                                     }}
                                 />
                             </button>
+                        </div>
+
+                        <div className="py-2">
+                            <div className="mb-3">
+                                <p className="font-medium">Daily Success Goal</p>
+                                <p className="text-sm text-muted">How much do you want to be successful?</p>
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                                <input
+                                    type="range"
+                                    min="1"
+                                    max="100"
+                                    value={settings.successThreshold || 80}
+                                    onChange={(e) => handleSettingChange('successThreshold', parseInt(e.target.value))}
+                                    className="flex-1 h-2 rounded-lg appearance-none cursor-pointer"
+                                    style={{
+                                        background: `linear-gradient(to right, var(--color-success) 0%, var(--color-success) ${settings.successThreshold || 80}%, var(--color-bg) ${settings.successThreshold || 80}%, var(--color-bg) 100%)`
+                                    }}
+                                />
+                                <span className="font-mono font-bold w-12 text-right">
+                                    {settings.successThreshold || 80}%
+                                </span>
+                            </div>
+                            <p className="text-xs text-muted mt-2">
+                                Achieve this daily progress to maintain your streak.
+                            </p>
                         </div>
                     </div>
                 </section>

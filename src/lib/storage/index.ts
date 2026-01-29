@@ -129,12 +129,14 @@ export interface AppSettings {
     theme: 'dark' | 'light' | 'system';
     hapticFeedback: boolean;
     notifications: boolean;
+    successThreshold: number; // Percentage (0-100) required to maintain streak
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
     theme: 'dark',
     hapticFeedback: true,
     notifications: false,
+    successThreshold: 80, // Default to 80% as a reasonable challenge
 };
 
 export function getSettings(): AppSettings {

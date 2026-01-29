@@ -5,6 +5,8 @@ import { useHabits } from '@/lib/hooks/useHabits';
 import { AddHabitModal } from '@/components/habits/AddHabitModal';
 import { BottomNav } from '@/components/ui/BottomNav';
 import { HabitIconBadge } from '@/components/ui/HabitIcons';
+import { StreakCelebration } from '@/components/ui/StreakCelebration';
+import { getSettings, AppSettings } from '@/lib/storage';
 import { formatDate, getToday } from '@/lib/utils/dates';
 
 export default function HomePage() {
@@ -23,6 +25,29 @@ export default function HomePage() {
   const [undoStack, setUndoStack] = useState<string[]>([]);
   const [showUndo, setShowUndo] = useState(false);
   const [editMode, setEditMode] = useState(false);
+
+  // Celebration state
+  const [celebrationActive, setCelebrationActive] = useState(false);
+  const [hasCelebrated, setHasCelebrated] = useState(false);
+  const [settings, setSettings] = useState<AppSettings | null>(null);
+
+  useEffect(() => {
+    setSettings(getSettings());
+  }, []);
+
+  const todayProgress = getTodayProgress();
+
+  // Check for celebration
+  useEffect(() => {
+    if (!settings || isLoading) return;
+
+    const threshold = settings.successThreshold || 80;
+    if (todayProgress >= threshold && !hasCelebrated && habitsWithProgress.length > 0) {
+      // Only celebrate if we actually have active habits
+      setCelebrationActive(true);
+      setHasCelebrated(true);
+    }
+  }, [todayProgress, settings, hasCelebrated, habitsWithProgress.length, isLoading]);
 
   // Auto-hide undo after 8 seconds of no activity
   useEffect(() => {
@@ -54,7 +79,7 @@ export default function HomePage() {
     }
   };
 
-  const todayProgress = getTodayProgress();
+
   const completedCount = habitsWithProgress.filter(h => h.isCompleted).length;
   const totalCount = habitsWithProgress.length;
   const today = getToday();
@@ -82,6 +107,10 @@ export default function HomePage() {
 
   return (
     <>
+      <StreakCelebration
+        isActive={celebrationActive}
+        onComplete={() => setCelebrationActive(false)}
+      />
       <div className="container safe-top">
         {/* Header */}
         <header className="page-header">
