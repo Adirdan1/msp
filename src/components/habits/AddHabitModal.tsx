@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Habit, PRESET_HABITS, GoalPeriod, HabitCategory, PresetHabit } from '@/lib/types';
+import { getHabitIcon } from '@/components/ui/HabitIcons';
 
 interface AddHabitModalProps {
     isOpen: boolean;
@@ -119,23 +120,30 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
 
                             {/* Preset grid - scrollable */}
                             <div className="grid grid-cols-3 gap-2">
-                                {PRESET_HABITS.map((preset) => (
-                                    <button
-                                        key={preset.name}
-                                        onClick={() => handlePresetSelect(preset)}
-                                        className="flex flex-col items-center p-3 rounded-lg border border-[var(--color-grid-line)] hover:border-[var(--color-text-muted)] hover:bg-[var(--color-bg-hover)] transition-all"
-                                    >
-                                        <span
-                                            className="w-10 h-10 rounded-md flex items-center justify-center font-bold text-white mb-2"
-                                            style={{ background: preset.color }}
+                                {PRESET_HABITS.map((preset) => {
+                                    const IconComponent = getHabitIcon(preset.name);
+                                    return (
+                                        <button
+                                            key={preset.name}
+                                            onClick={() => handlePresetSelect(preset)}
+                                            className="flex flex-col items-center p-3 rounded-lg border border-[var(--color-grid-line)] hover:border-[var(--color-text-muted)] hover:bg-[var(--color-bg-hover)] transition-all"
                                         >
-                                            {preset.name.charAt(0)}
-                                        </span>
-                                        <span className="text-xs font-medium truncate w-full text-center">
-                                            {preset.name}
-                                        </span>
-                                    </button>
-                                ))}
+                                            <span
+                                                className="w-10 h-10 rounded-md flex items-center justify-center text-white mb-2"
+                                                style={{ background: preset.color }}
+                                            >
+                                                {IconComponent ? (
+                                                    <IconComponent className="w-5 h-5" />
+                                                ) : (
+                                                    <span className="font-bold">{preset.name.charAt(0)}</span>
+                                                )}
+                                            </span>
+                                            <span className="text-xs font-medium truncate w-full text-center">
+                                                {preset.name}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </>
                     ) : (
@@ -268,7 +276,7 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
                         </button>
                     )}
                 </div>
-            </div>
+            </div >
         </>
     );
 }
