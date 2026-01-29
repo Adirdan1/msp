@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Habit, PRESET_HABITS, GoalPeriod, HabitCategory, PresetHabit } from '@/lib/types';
+import { Habit, PRESET_HABITS, GoalPeriod, HabitCategory, PresetHabit, HabitType } from '@/lib/types';
 import { getHabitIcon } from '@/components/ui/HabitIcons';
 
 interface AddHabitModalProps {
@@ -29,6 +29,7 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
     const [goalPeriod, setGoalPeriod] = useState<GoalPeriod>('day');
     const [goalPeriodDays, setGoalPeriodDays] = useState(1);
     const [category, setCategory] = useState<HabitCategory>('custom');
+    const [habitType, setHabitType] = useState<HabitType>('good');
 
     // Lock body scroll when modal is open (fixes iOS Safari background scroll issue)
     useEffect(() => {
@@ -60,6 +61,7 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
         setGoalPeriod(preset.defaultGoalPeriod);
         setGoalPeriodDays(preset.defaultGoalPeriodDays);
         setCategory(preset.category);
+        setHabitType(preset.habitType || 'good');
         setMode('custom');
     };
 
@@ -75,6 +77,7 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
             goalPeriod,
             goalPeriodDays: goalPeriod === 'custom' ? goalPeriodDays : goalPeriod === 'day' ? 1 : 7,
             color,
+            habitType,
         });
 
         resetForm();

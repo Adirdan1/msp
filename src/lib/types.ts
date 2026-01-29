@@ -3,6 +3,7 @@
 export type HabitCategory = 'health' | 'productivity' | 'hobby' | 'chore' | 'custom';
 export type GoalPeriod = 'day' | 'week' | 'custom';
 export type TimePeriod = 'day' | 'week' | 'month' | 'year';
+export type HabitType = 'good' | 'bad'; // good = build, bad = break/avoid
 
 export interface Habit {
     id: string;
@@ -10,6 +11,7 @@ export interface Habit {
     icon: string;
     category: HabitCategory;
     unit: string;
+    habitType?: HabitType; // 'good' (default) or 'bad' (habits to break)
 
     // Goal configuration
     goalAmount: number;
@@ -91,6 +93,7 @@ export interface PresetHabit {
     defaultGoalPeriod: GoalPeriod;
     defaultGoalPeriodDays: number;
     color: string;
+    habitType?: HabitType;
 }
 
 export const PRESET_HABITS: PresetHabit[] = [
@@ -213,6 +216,7 @@ export const PRESET_HABITS: PresetHabit[] = [
         defaultGoalPeriod: 'day',
         defaultGoalPeriodDays: 1,
         color: '#f43f5e',
+        habitType: 'bad',
     },
 ];
 

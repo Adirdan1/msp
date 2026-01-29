@@ -59,6 +59,10 @@ export default function HomePage() {
   const totalCount = habitsWithProgress.length;
   const today = getToday();
 
+  // Separate good and bad habits (bad habits are habits to break/avoid)
+  const goodHabits = habitsWithProgress.filter(h => h.habitType !== 'bad');
+  const badHabits = habitsWithProgress.filter(h => h.habitType === 'bad');
+
   const getProgressColor = (percentage: number) => {
     if (percentage >= 100) return 'var(--color-success)';
     if (percentage >= 50) return 'var(--color-warning)';
@@ -159,88 +163,184 @@ export default function HomePage() {
             </button>
           </div>
         ) : (
-          <div className="space-y-3">
-            {habitsWithProgress.map((habit) => (
-              <div key={habit.id} className="habit-list-item">
-                <HabitIconBadge name={habit.name} color={habit.color} size="md" />
+          <>
+            {/* Good Habits Section */}
+            {goodHabits.length > 0 && (
+              <div className="space-y-3 mb-6">
+                {goodHabits.map((habit) => (
+                  <div key={habit.id} className="habit-list-item">
+                    <HabitIconBadge name={habit.name} color={habit.color} size="md" />
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-medium truncate">{habit.name}</span>
-                    <span className="text-sm font-mono text-muted ml-2">
-                      {habit.progress}/{habit.target} {habit.unit}
-                    </span>
-                  </div>
-                  <div className="habit-progress-bar">
-                    <div
-                      className={`habit-progress-fill ${habit.percentage >= 100 ? 'success' :
-                        habit.percentage >= 50 ? 'partial' :
-                          'danger'
-                        }`}
-                      style={{ width: `${Math.min(habit.percentage, 100)}%` }}
-                    />
-                  </div>
-                </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-medium truncate">{habit.name}</span>
+                        <span className="text-sm font-mono text-muted ml-2">
+                          {habit.progress}/{habit.target} {habit.unit}
+                        </span>
+                      </div>
+                      <div className="habit-progress-bar">
+                        <div
+                          className={`habit-progress-fill ${habit.percentage >= 100 ? 'success' :
+                            habit.percentage >= 50 ? 'partial' :
+                              'danger'
+                            }`}
+                          style={{ width: `${Math.min(habit.percentage, 100)}%` }}
+                        />
+                      </div>
+                    </div>
 
-                <div className="flex items-center gap-2">
-                  {/* Minus button in edit mode */}
-                  {editMode && habit.progress > 0 && (
-                    <button
-                      onClick={() => {
-                        const subtractAmount = habit.target / 4;
-                        handleLogProgress(habit.id, -subtractAmount);
-                      }}
-                      className="btn btn-sm"
-                      style={{
-                        background: 'var(--color-danger)',
-                        color: 'white',
-                        width: '32px',
-                        height: '32px',
-                        padding: 0,
-                        borderRadius: '50%',
-                      }}
-                      title={`Subtract ${(habit.target / 4).toFixed(1)}`}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                      </svg>
-                    </button>
-                  )}
-                  <button
-                    onClick={() => {
-                      if (!habit.isCompleted) {
-                        handleLogProgress(habit.id, habit.target / 4);
-                      }
-                    }}
-                    disabled={habit.isCompleted}
-                    className={`btn btn-sm font-mono font-bold animate-pop ${habit.percentage < 50 && !habit.isCompleted ? 'btn-secondary' : ''}`}
-                    key={`${habit.id}-${Math.round(habit.percentage)}`}
-                    style={{
-                      background: habit.percentage >= 100
-                        ? 'var(--color-success)'
-                        : habit.percentage >= 50
-                          ? 'var(--color-warning)'
-                          : undefined,
-                      color: habit.percentage >= 50 ? 'white' : undefined,
-                      minWidth: '60px',
-                      cursor: habit.isCompleted ? 'default' : 'pointer',
-                      opacity: habit.isCompleted ? 1 : undefined,
-                      transition: 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-                    }}
-                    title={habit.isCompleted ? 'Completed - Max reached!' : `Click to add ${(habit.target / 4).toFixed(1)}`}
-                  >
-                    {habit.percentage >= 100 ? (
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="animate-pop">
-                        <polyline points="20,6 9,17 4,12" />
-                      </svg>
-                    ) : (
-                      `${Math.round(habit.percentage)}%`
-                    )}
-                  </button>
-                </div>
+                    <div className="flex items-center gap-2">
+                      {/* Minus button in edit mode */}
+                      {editMode && habit.progress > 0 && (
+                        <button
+                          onClick={() => {
+                            const subtractAmount = habit.target / 4;
+                            handleLogProgress(habit.id, -subtractAmount);
+                          }}
+                          className="btn btn-sm"
+                          style={{
+                            background: 'var(--color-danger)',
+                            color: 'white',
+                            width: '32px',
+                            height: '32px',
+                            padding: 0,
+                            borderRadius: '50%',
+                          }}
+                          title={`Subtract ${(habit.target / 4).toFixed(1)}`}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                          </svg>
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          if (!habit.isCompleted) {
+                            handleLogProgress(habit.id, habit.target / 4);
+                          }
+                        }}
+                        disabled={habit.isCompleted}
+                        className={`btn btn-sm font-mono font-bold animate-pop ${habit.percentage < 50 && !habit.isCompleted ? 'btn-secondary' : ''}`}
+                        key={`${habit.id}-${Math.round(habit.percentage)}`}
+                        style={{
+                          background: habit.percentage >= 100
+                            ? 'var(--color-success)'
+                            : habit.percentage >= 50
+                              ? 'var(--color-warning)'
+                              : undefined,
+                          color: habit.percentage >= 50 ? 'white' : undefined,
+                          minWidth: '60px',
+                          cursor: habit.isCompleted ? 'default' : 'pointer',
+                          opacity: habit.isCompleted ? 1 : undefined,
+                          transition: 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                        }}
+                        title={habit.isCompleted ? 'Completed - Max reached!' : `Click to add ${(habit.target / 4).toFixed(1)}`}
+                      >
+                        {habit.percentage >= 100 ? (
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="animate-pop">
+                            <polyline points="20,6 9,17 4,12" />
+                          </svg>
+                        ) : (
+                          `${Math.round(habit.percentage)}%`
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            )}
+
+            {/* Bad Habits Section */}
+            {badHabits.length > 0 && (
+              <>
+                <div className="section-title" style={{ marginTop: goodHabits.length > 0 ? '1rem' : 0 }}>
+                  🚫 Habits to Break
+                </div>
+                <div className="space-y-3">
+                  {badHabits.map((habit) => (
+                    <div key={habit.id} className="habit-list-item" style={{ borderLeft: '3px solid var(--color-danger)' }}>
+                      <HabitIconBadge name={habit.name} color={habit.color} size="md" />
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-medium truncate">{habit.name}</span>
+                          <span className="text-sm font-mono text-muted ml-2">
+                            {habit.progress}/{habit.target} {habit.unit}
+                          </span>
+                        </div>
+                        <div className="habit-progress-bar">
+                          <div
+                            className={`habit-progress-fill ${habit.percentage >= 100 ? 'success' :
+                              habit.percentage >= 50 ? 'partial' :
+                                'danger'
+                              }`}
+                            style={{ width: `${Math.min(habit.percentage, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {/* Minus button in edit mode */}
+                        {editMode && habit.progress > 0 && (
+                          <button
+                            onClick={() => {
+                              const subtractAmount = habit.target / 4;
+                              handleLogProgress(habit.id, -subtractAmount);
+                            }}
+                            className="btn btn-sm"
+                            style={{
+                              background: 'var(--color-danger)',
+                              color: 'white',
+                              width: '32px',
+                              height: '32px',
+                              padding: 0,
+                              borderRadius: '50%',
+                            }}
+                            title={`Subtract ${(habit.target / 4).toFixed(1)}`}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                              <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
+                          </button>
+                        )}
+                        <button
+                          onClick={() => {
+                            if (!habit.isCompleted) {
+                              handleLogProgress(habit.id, habit.target / 4);
+                            }
+                          }}
+                          disabled={habit.isCompleted}
+                          className={`btn btn-sm font-mono font-bold animate-pop ${habit.percentage < 50 && !habit.isCompleted ? 'btn-secondary' : ''}`}
+                          key={`${habit.id}-${Math.round(habit.percentage)}`}
+                          style={{
+                            background: habit.percentage >= 100
+                              ? 'var(--color-success)'
+                              : habit.percentage >= 50
+                                ? 'var(--color-warning)'
+                                : undefined,
+                            color: habit.percentage >= 50 ? 'white' : undefined,
+                            minWidth: '60px',
+                            cursor: habit.isCompleted ? 'default' : 'pointer',
+                            opacity: habit.isCompleted ? 1 : undefined,
+                            transition: 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                          }}
+                          title={habit.isCompleted ? 'Completed - Max reached!' : `Click to add ${(habit.target / 4).toFixed(1)}`}
+                        >
+                          {habit.percentage >= 100 ? (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="animate-pop">
+                              <polyline points="20,6 9,17 4,12" />
+                            </svg>
+                          ) : (
+                            `${Math.round(habit.percentage)}%`
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         )}
 
         {/* Quick Stats */}
