@@ -656,7 +656,6 @@ body {
   display: flex;
   flex-direction: column;
   animation: slideUp 200ms ease;
-  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 @media (min-width: 640px) {
@@ -699,7 +698,9 @@ body {
 }
 
 .modal-footer {
+  margin-top: auto;
   padding: var(--space-md) var(--space-lg);
+  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom, 20px));
   border-top: 1px solid var(--color-grid-line);
   flex-shrink: 0;
   background: var(--color-bg-secondary);
