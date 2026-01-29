@@ -119,8 +119,14 @@ export function useHabits() {
     // Get today's completion percentage
     const getTodayProgress = useCallback(() => {
         if (habitsWithProgress.length === 0) return 0;
-        const completed = habitsWithProgress.filter(h => h.isCompleted).length;
-        return Math.round((completed / habitsWithProgress.length) * 100);
+
+        // Calculate average percentage across all active habits
+        // Cap each habit's contribution at 100% so overachieving on one doesn't mask others
+        const totalPercentage = habitsWithProgress.reduce((sum, habit) => {
+            return sum + Math.min(habit.percentage, 100);
+        }, 0);
+
+        return Math.round(totalPercentage / habitsWithProgress.length);
     }, [habitsWithProgress]);
 
     return {
