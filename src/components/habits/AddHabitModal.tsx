@@ -114,11 +114,11 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
                     {mode === 'preset' ? (
                         <>
                             <p className="text-sm text-muted mb-4">
-                                Choose a preset or create your own habit
+                                Choose a preset or scroll down for more
                             </p>
 
-                            {/* Preset grid */}
-                            <div className="grid grid-cols-3 gap-2 mb-6">
+                            {/* Preset grid - scrollable */}
+                            <div className="grid grid-cols-3 gap-2">
                                 {PRESET_HABITS.map((preset) => (
                                     <button
                                         key={preset.name}
@@ -137,19 +137,6 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
                                     </button>
                                 ))}
                             </div>
-
-                            <div className="relative flex items-center gap-4 my-6">
-                                <div className="flex-1 h-px bg-[var(--color-grid-line)]" />
-                                <span className="text-xs text-muted">OR CREATE CUSTOM</span>
-                                <div className="flex-1 h-px bg-[var(--color-grid-line)]" />
-                            </div>
-
-                            <button
-                                onClick={() => setMode('custom')}
-                                className="btn btn-secondary w-full py-3"
-                            >
-                                Create Custom Habit
-                            </button>
                         </>
                     ) : (
                         <>
@@ -285,9 +272,16 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
                     )}
                 </div>
 
-                {/* Footer */}
-                {mode === 'custom' && (
-                    <div className="modal-footer">
+                {/* Footer - always visible */}
+                <div className="modal-footer">
+                    {mode === 'preset' ? (
+                        <button
+                            onClick={() => setMode('custom')}
+                            className="btn btn-primary w-full py-3"
+                        >
+                            ✨ Create Custom Habit
+                        </button>
+                    ) : (
                         <button
                             onClick={handleSubmit}
                             disabled={!name.trim()}
@@ -295,8 +289,8 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
                         >
                             Create Habit
                         </button>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </>
     );
