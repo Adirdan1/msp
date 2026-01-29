@@ -143,18 +143,18 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
                             {/* Back button */}
                             <button
                                 onClick={() => setMode('preset')}
-                                className="btn btn-ghost text-sm mb-4"
+                                className="btn btn-ghost text-sm mb-2"
                                 style={{ marginLeft: '-8px' }}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M19 12H5M12 19l-7-7 7-7" />
                                 </svg>
-                                Back to presets
+                                Back
                             </button>
 
                             {/* Name */}
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">Name</label>
+                            <div className="mb-3">
+                                <label className="block text-sm font-medium mb-1">Name</label>
                                 <input
                                     type="text"
                                     value={name}
@@ -164,98 +164,75 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
                                 />
                             </div>
 
-                            {/* Color */}
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">Color</label>
-                                <div className="flex gap-2 flex-wrap">
+                            {/* Color - compact */}
+                            <div className="mb-3">
+                                <label className="block text-sm font-medium mb-1">Color</label>
+                                <div className="flex gap-1.5 flex-wrap">
                                     {HABIT_COLORS.map((c) => (
                                         <button
                                             key={c}
                                             onClick={() => setColor(c)}
-                                            className="w-8 h-8 rounded-md transition-transform"
+                                            className="w-7 h-7 rounded transition-transform"
                                             style={{
                                                 background: c,
-                                                transform: color === c ? 'scale(1.1)' : 'scale(1)',
-                                                boxShadow: color === c ? `0 0 0 2px var(--color-bg-secondary), 0 0 0 4px ${c}` : 'none'
+                                                transform: color === c ? 'scale(1.15)' : 'scale(1)',
+                                                boxShadow: color === c ? `0 0 0 2px var(--color-bg-secondary), 0 0 0 3px ${c}` : 'none'
                                             }}
                                         />
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Goal */}
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">Goal</label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="number"
-                                        value={goalAmount}
-                                        onChange={(e) => setGoalAmount(Number(e.target.value))}
-                                        min={1}
-                                        className="input flex-1"
-                                    />
-                                    <select
-                                        value={unit}
-                                        onChange={(e) => setUnit(e.target.value)}
-                                        className="input select flex-1"
-                                    >
-                                        <option value="times">times</option>
-                                        <option value="min">minutes</option>
-                                        <option value="hours">hours</option>
-                                        <option value="L">liters</option>
-                                        <option value="ml">ml</option>
-                                        <option value="pages">pages</option>
-                                        <option value="steps">steps</option>
-                                        <option value="servings">servings</option>
-                                        <option value="days">days</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            {/* Period */}
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">Period</label>
-                                <div className="flex gap-2 flex-wrap">
-                                    <button
-                                        onClick={() => setGoalPeriod('day')}
-                                        className={`btn ${goalPeriod === 'day' ? 'btn-primary' : 'btn-secondary'}`}
-                                    >
-                                        Daily
-                                    </button>
-                                    <button
-                                        onClick={() => setGoalPeriod('week')}
-                                        className={`btn ${goalPeriod === 'week' ? 'btn-primary' : 'btn-secondary'}`}
-                                    >
-                                        Weekly
-                                    </button>
-                                    <button
-                                        onClick={() => setGoalPeriod('custom')}
-                                        className={`btn ${goalPeriod === 'custom' ? 'btn-primary' : 'btn-secondary'}`}
-                                    >
-                                        Custom
-                                    </button>
-                                </div>
-
-                                {goalPeriod === 'custom' && (
-                                    <div className="flex items-center gap-2 mt-3 animate-fade-in">
-                                        <span className="text-sm text-muted">Every</span>
+                            {/* Goal + Period in one row */}
+                            <div className="grid grid-cols-2 gap-3 mb-3">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Goal</label>
+                                    <div className="flex gap-1">
                                         <input
                                             type="number"
-                                            value={goalPeriodDays}
-                                            onChange={(e) => setGoalPeriodDays(Number(e.target.value))}
+                                            value={goalAmount}
+                                            onChange={(e) => setGoalAmount(Number(e.target.value))}
                                             min={1}
-                                            max={30}
-                                            className="input text-center"
-                                            style={{ width: '80px' }}
+                                            className="input"
+                                            style={{ width: '60px' }}
                                         />
-                                        <span className="text-sm text-muted">days</span>
+                                        <select
+                                            value={unit}
+                                            onChange={(e) => setUnit(e.target.value)}
+                                            className="input select flex-1"
+                                        >
+                                            <option value="times">times</option>
+                                            <option value="min">min</option>
+                                            <option value="hours">hrs</option>
+                                            <option value="L">L</option>
+                                            <option value="ml">ml</option>
+                                            <option value="pages">pg</option>
+                                            <option value="steps">steps</option>
+                                        </select>
                                     </div>
-                                )}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Period</label>
+                                    <div className="flex gap-1">
+                                        <button
+                                            onClick={() => setGoalPeriod('day')}
+                                            className={`btn btn-sm flex-1 ${goalPeriod === 'day' ? 'btn-primary' : 'btn-secondary'}`}
+                                        >
+                                            Day
+                                        </button>
+                                        <button
+                                            onClick={() => setGoalPeriod('week')}
+                                            className={`btn btn-sm flex-1 ${goalPeriod === 'week' ? 'btn-primary' : 'btn-secondary'}`}
+                                        >
+                                            Week
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Category */}
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">Category</label>
+                            <div className="mb-2">
+                                <label className="block text-sm font-medium mb-1">Category</label>
                                 <select
                                     value={category}
                                     onChange={(e) => setCategory(e.target.value as HabitCategory)}
