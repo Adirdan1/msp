@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useHabits } from '@/lib/hooks/useHabits';
 import { AddHabitModal } from '@/components/habits/AddHabitModal';
 import { BottomNav } from '@/components/ui/BottomNav';
+import { HabitIconBadge } from '@/components/ui/HabitIcons';
 import { formatDate, getToday } from '@/lib/utils/dates';
 
 export default function HomePage() {
@@ -141,15 +142,7 @@ export default function HomePage() {
           <div className="space-y-3">
             {habitsWithProgress.map((habit) => (
               <div key={habit.id} className="habit-list-item">
-                <span
-                  className="habit-icon-badge"
-                  style={{
-                    background: habit.color ? `${habit.color}20` : 'var(--color-accent-light)',
-                    color: habit.color || 'var(--color-accent)'
-                  }}
-                >
-                  {habit.name.charAt(0).toUpperCase()}
-                </span>
+                <HabitIconBadge name={habit.name} color={habit.color} size="md" />
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">

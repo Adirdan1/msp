@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useHabits } from '@/lib/hooks/useHabits';
 import { BottomNav } from '@/components/ui/BottomNav';
+import { HabitIconBadge } from '@/components/ui/HabitIcons';
 import { getSettings, saveSettings, AppSettings } from '@/lib/storage';
 
 export default function SettingsPage() {
@@ -105,15 +106,12 @@ export default function SettingsPage() {
                                 {habits.map((habit) => (
                                     <div key={habit.id} className="flex items-center justify-between py-3">
                                         <div className="flex items-center gap-3">
-                                            <span
-                                                className="w-8 h-8 rounded flex items-center justify-center text-sm font-bold text-white"
-                                                style={{
-                                                    background: habit.color || 'var(--color-accent)',
-                                                    opacity: habit.isActive ? 1 : 0.5
-                                                }}
-                                            >
-                                                {habit.name.charAt(0)}
-                                            </span>
+                                            <HabitIconBadge
+                                                name={habit.name}
+                                                color={habit.color}
+                                                size="md"
+                                                className={habit.isActive ? '' : 'opacity-50'}
+                                            />
                                             <div>
                                                 <p className={`font-medium ${!habit.isActive ? 'text-muted' : ''}`}>
                                                     {habit.name}

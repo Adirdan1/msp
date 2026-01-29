@@ -4,6 +4,7 @@ import { useHabits } from '@/lib/hooks/useHabits';
 import { useStats } from '@/lib/hooks/useStats';
 import { BottomNav } from '@/components/ui/BottomNav';
 import { PeriodSelector } from '@/components/ui/PeriodSelector';
+import { HabitIconBadge } from '@/components/ui/HabitIcons';
 
 export default function StatsPage() {
     const { habits, logs, isLoading } = useHabits();
@@ -165,12 +166,7 @@ export default function StatsPage() {
                                     <div key={habit.id}>
                                         <div className="flex items-center justify-between mb-2">
                                             <div className="flex items-center gap-2">
-                                                <span
-                                                    className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold text-white"
-                                                    style={{ background: habit.color || 'var(--color-accent)' }}
-                                                >
-                                                    {habit.name.charAt(0)}
-                                                </span>
+                                                <HabitIconBadge name={habit.name} color={habit.color} size="sm" />
                                                 <span className="font-medium">{habit.name}</span>
                                             </div>
                                             <span className="text-sm font-mono" style={{

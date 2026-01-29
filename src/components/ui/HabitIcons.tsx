@@ -109,3 +109,43 @@ export const HabitIcons: Record<string, React.FC<IconProps>> = {
 export function getHabitIcon(name: string): React.FC<IconProps> | null {
     return HabitIcons[name] || null;
 }
+
+// Reusable badge component that shows icon or letter
+interface HabitIconBadgeProps {
+    name: string;
+    color?: string;
+    size?: 'sm' | 'md' | 'lg';
+    className?: string;
+}
+
+export function HabitIconBadge({ name, color, size = 'md', className = '' }: HabitIconBadgeProps) {
+    const IconComponent = getHabitIcon(name);
+
+    const sizeClasses = {
+        sm: 'w-6 h-6',
+        md: 'w-8 h-8',
+        lg: 'w-10 h-10',
+    };
+
+    const iconSizes = {
+        sm: 'w-3 h-3',
+        md: 'w-4 h-4',
+        lg: 'w-5 h-5',
+    };
+
+    return (
+        <span
+            className={`${sizeClasses[size]} rounded-md flex items-center justify-center flex-shrink-0 ${className}`}
+            style={{
+                background: color ? `${color}20` : 'var(--color-accent-light)',
+                color: color || 'var(--color-accent)'
+            }}
+        >
+            {IconComponent ? (
+                <IconComponent className={iconSizes[size]} />
+            ) : (
+                <span className="font-bold text-xs">{name.charAt(0).toUpperCase()}</span>
+            )}
+        </span>
+    );
+}

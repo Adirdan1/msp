@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Habit, HabitLog, QUICK_AMOUNTS } from '@/lib/types';
 import { getDatesBetween, getDaysAgo, getToday, formatDate } from '@/lib/utils/dates';
 import { calculateHabitProgress } from '@/lib/stats';
+import { HabitIconBadge } from '@/components/ui/HabitIcons';
 
 interface CalendarGridProps {
     habits: Habit[];
@@ -128,15 +129,7 @@ export function CalendarGrid({ habits, logs, days = 14, onLogProgress, onOpenMod
                     return (
                         <div key={habit.id} className="calendar-row">
                             <div className="calendar-cell calendar-habit-cell">
-                                <span
-                                    className="habit-icon-badge"
-                                    style={{
-                                        background: habit.color ? `${habit.color}20` : 'var(--color-accent-light)',
-                                        color: habit.color || 'var(--color-accent)'
-                                    }}
-                                >
-                                    {habit.name.charAt(0).toUpperCase()}
-                                </span>
+                                <HabitIconBadge name={habit.name} color={habit.color} size="sm" />
                                 <div style={{ minWidth: 0, flex: 1 }}>
                                     <div style={{ fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                         {habit.name}
