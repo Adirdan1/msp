@@ -172,6 +172,15 @@ export function getWeekNumber(dateStr: string): number {
 }
 
 /**
+ * Add days to a date string
+ */
+export function addDays(dateStr: string, days: number): string {
+    const date = new Date(dateStr);
+    date.setDate(date.getDate() + days);
+    return date.toISOString().split('T')[0];
+}
+
+/**
  * Generate unique ID
  */
 export function generateId(): string {

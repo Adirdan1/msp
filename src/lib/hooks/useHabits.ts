@@ -11,6 +11,7 @@ import {
     getLogs,
     addLog as storageAddLog,
     deleteLog as storageDeleteLog,
+    updateLog as storageUpdateLog,
     initializeDemoData,
 } from '../storage';
 import { getHabitWithProgress } from '../stats';
@@ -75,12 +76,14 @@ export function useHabits() {
     }, [habits, updateHabit]);
 
     // Log progress for a habit
-    const logProgress = useCallback((habitId: string, amount: number, note?: string) => {
+    const logProgress = useCallback((habitId: string, amount: number, date?: string, note?: string) => {
+        const logDate = date || getToday();
+
         const newLog: HabitLog = {
             id: generateId(),
             habitId,
             amount,
-            date: getToday(),
+            date: logDate,
             note,
             createdAt: new Date().toISOString(),
         };
@@ -112,7 +115,13 @@ export function useHabits() {
 
     // Delete a log entry
     const deleteLogEntry = useCallback((logId: string) => {
-        const updated = storageDeleteLog(logId);
+        storageDeleteLog(logId);
+        setLogs(prev => prev.filter(l => l.id !== logId));
+    }, []);
+
+    // Update a log entry
+    const updateLogEntry = useCallback((logId: string, updates: Partial<HabitLog>) => {
+        const updated = storageUpdateLog(logId, updates);
         setLogs(updated);
     }, []);
 
@@ -141,6 +150,7 @@ export function useHabits() {
         logProgress,
         quickComplete,
         deleteLogEntry,
+        updateLogEntry,
         getTodayProgress,
     };
 }

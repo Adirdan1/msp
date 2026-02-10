@@ -247,6 +247,10 @@ body::before {
   background: var(--color-grid-line);
 }
 
+.calendar-habit-cell.calendar-header-cell {
+  z-index: 20;
+}
+
 /* Status Cells */
 .status-cell {
   cursor: pointer;
@@ -1008,6 +1012,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .safe-top {
   padding-top: env(safe-area-inset-top);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Gradient text helper */

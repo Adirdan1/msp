@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Habit, HabitLog, QUICK_AMOUNTS } from '@/lib/types';
-import { getDatesBetween, getDaysAgo, getToday, formatDate } from '@/lib/utils/dates';
+import { getDatesBetween, getDaysAgo, getToday, formatDate, addDays } from '@/lib/utils/dates';
 import { calculateHabitProgress } from '@/lib/stats';
 import { HabitIconBadge } from '@/components/ui/HabitIcons';
 
@@ -10,14 +10,15 @@ interface CalendarGridProps {
     habits: Habit[];
     logs: HabitLog[];
     days?: number;
+    endDate: string;
     onLogProgress: (habitId: string, amount: number, date: string) => void;
     onOpenModal?: (habit: Habit, date: string) => void;
 }
 
-export function CalendarGrid({ habits, logs, days = 14, onLogProgress, onOpenModal }: CalendarGridProps) {
+export function CalendarGrid({ habits, logs, days = 14, endDate, onLogProgress, onOpenModal }: CalendarGridProps) {
     const today = getToday();
-    const startDate = getDaysAgo(days - 1);
-    const dates = getDatesBetween(startDate, today);
+    const startDate = addDays(endDate, -(days - 1));
+    const dates = getDatesBetween(startDate, endDate);
     const activeHabits = habits.filter(h => h.isActive);
 
     // Track recently clicked cells for animation
