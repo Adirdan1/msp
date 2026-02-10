@@ -43,7 +43,20 @@ export default function SettingsPage() {
 
                 {/* Appearance Section */}
                 <section className="mb-6">
-                    <div className="section-title">Appearance</div>
+                    <div className="section-title flex items-center gap-2">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="5" />
+                            <line x1="12" y1="1" x2="12" y2="3" />
+                            <line x1="12" y1="21" x2="12" y2="23" />
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                            <line x1="1" y1="12" x2="3" y2="12" />
+                            <line x1="21" y1="12" x2="23" y2="12" />
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                        </svg>
+                        Appearance
+                    </div>
 
                     <div className="stat-card">
                         <div className="flex items-center justify-between py-2">
@@ -67,27 +80,33 @@ export default function SettingsPage() {
 
                 {/* Preferences Section */}
                 <section className="mb-6">
-                    <div className="section-title">Preferences</div>
+                    <div className="section-title flex items-center gap-2">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <line x1="4" y1="21" x2="4" y2="14" />
+                            <line x1="4" y1="10" x2="4" y2="3" />
+                            <line x1="12" y1="21" x2="12" y2="12" />
+                            <line x1="12" y1="8" x2="12" y2="3" />
+                            <line x1="20" y1="21" x2="20" y2="16" />
+                            <line x1="20" y1="12" x2="20" y2="3" />
+                            <line x1="1" y1="14" x2="7" y2="14" />
+                            <line x1="9" y1="8" x2="15" y2="8" />
+                            <line x1="17" y1="16" x2="23" y2="16" />
+                        </svg>
+                        Preferences
+                    </div>
 
                     <div className="stat-card">
-                        <div className="flex items-center justify-between py-2 border-b border-[var(--color-grid-line)] mb-4 pb-4">
+                        <div className="flex items-center justify-between py-2" style={{ borderBottom: '1px solid var(--glass-border)', marginBottom: '16px', paddingBottom: '16px' }}>
                             <div>
                                 <p className="font-medium">Haptic Feedback</p>
                                 <p className="text-sm text-muted">Vibration on iOS devices</p>
                             </div>
                             <button
                                 onClick={() => handleSettingChange('hapticFeedback', !settings.hapticFeedback)}
-                                className="relative w-12 h-7 rounded-full transition-colors"
-                                style={{
-                                    background: settings.hapticFeedback ? 'var(--color-success)' : 'var(--color-neutral)'
-                                }}
+                                className="toggle-switch"
+                                data-on={String(settings.hapticFeedback)}
                             >
-                                <span
-                                    className="absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-transform"
-                                    style={{
-                                        transform: settings.hapticFeedback ? 'translateX(20px)' : 'translateX(2px)'
-                                    }}
-                                />
+                                <span className="toggle-knob" />
                             </button>
                         </div>
 
@@ -104,12 +123,12 @@ export default function SettingsPage() {
                                     max="100"
                                     value={settings.successThreshold || 80}
                                     onChange={(e) => handleSettingChange('successThreshold', parseInt(e.target.value))}
-                                    className="flex-1 h-2 rounded-lg appearance-none cursor-pointer"
+                                    className="flex-1 h-2 rounded-lg cursor-pointer"
                                     style={{
-                                        background: `linear-gradient(to right, var(--color-success) 0%, var(--color-success) ${settings.successThreshold || 80}%, var(--color-bg) ${settings.successThreshold || 80}%, var(--color-bg) 100%)`
+                                        background: `linear-gradient(to right, var(--color-accent) 0%, var(--color-accent-end) ${settings.successThreshold || 80}%, var(--color-neutral-bg) ${settings.successThreshold || 80}%, var(--color-neutral-bg) 100%)`
                                     }}
                                 />
-                                <span className="font-mono font-bold w-12 text-right">
+                                <span className="font-mono font-bold w-12 text-right gradient-text">
                                     {settings.successThreshold || 80}%
                                 </span>
                             </div>
@@ -122,7 +141,13 @@ export default function SettingsPage() {
 
                 {/* Manage Habits Section */}
                 <section className="mb-6">
-                    <div className="section-title">Manage Habits</div>
+                    <div className="section-title flex items-center gap-2">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                        Manage Habits
+                    </div>
 
                     {habits.length === 0 ? (
                         <div className="stat-card text-center py-4">
@@ -130,7 +155,7 @@ export default function SettingsPage() {
                         </div>
                     ) : (
                         <div className="stat-card">
-                            <div className="divide-y divide-[var(--color-grid-line)]">
+                            <div className="divide-y divide-[var(--glass-border)]">
                                 {habits.map((habit) => (
                                     <div key={habit.id} className="flex items-center justify-between py-3">
                                         <div className="flex items-center gap-3">
@@ -189,14 +214,32 @@ export default function SettingsPage() {
 
                 {/* About Section */}
                 <section className="mb-6">
-                    <div className="section-title">About</div>
+                    <div className="section-title flex items-center gap-2">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="16" x2="12" y2="12" />
+                            <line x1="12" y1="8" x2="12.01" y2="8" />
+                        </svg>
+                        About
+                    </div>
 
                     <div className="stat-card">
                         <div className="py-2">
-                            <p className="font-medium">My Success Power</p>
-                            <p className="text-sm text-muted">Version 1.5.2</p>
+                            <p className="font-semibold gradient-text" style={{ fontSize: '16px' }}>My Success Power</p>
+                            <div className="flex items-center gap-2 mt-1">
+                                <span
+                                    className="text-xs font-mono px-2 py-0.5"
+                                    style={{
+                                        background: 'var(--color-accent-light)',
+                                        color: 'var(--color-accent)',
+                                        borderRadius: 'var(--radius-full)',
+                                    }}
+                                >
+                                    v2.0.0
+                                </span>
+                            </div>
                         </div>
-                        <div className="py-2 border-t border-[var(--color-grid-line)]">
+                        <div className="py-2" style={{ borderTop: '1px solid var(--glass-border)', marginTop: '8px', paddingTop: '12px' }}>
                             <p className="text-sm text-muted">
                                 Track your habits with flexible goals and see your success over time.
                                 All data is stored locally on your device.
@@ -213,7 +256,7 @@ export default function SettingsPage() {
                     <div className="modal" style={{ maxWidth: '360px' }}>
                         <div className="modal-body text-center py-6">
                             <div
-                                className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center"
+                                className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center"
                                 style={{ background: 'var(--color-danger-bg)' }}
                             >
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-danger)" strokeWidth="2">

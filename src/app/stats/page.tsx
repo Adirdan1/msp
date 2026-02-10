@@ -6,6 +6,15 @@ import { BottomNav } from '@/components/ui/BottomNav';
 import { PeriodSelector } from '@/components/ui/PeriodSelector';
 import { HabitIconBadge } from '@/components/ui/HabitIcons';
 
+function getInsight(successRate: number, currentStreak: number): string {
+    if (successRate >= 90 && currentStreak >= 7) return "Outstanding consistency! You're in the zone 🏆";
+    if (successRate >= 80) return "Strong performance — keep building momentum! 💪";
+    if (successRate >= 60) return "Solid progress. Stay focused on your goals 🎯";
+    if (successRate >= 40) return "Room to grow — try tackling one habit at a time 🌱";
+    if (successRate > 0) return "Every step forward counts. Start small, finish big 💫";
+    return "Begin tracking to see your progress here 📊";
+}
+
 export default function StatsPage() {
     const { habits, logs, isLoading } = useHabits();
     const {
@@ -20,7 +29,8 @@ export default function StatsPage() {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <div className="text-lg font-medium text-muted">Loading stats...</div>
+                    <div className="w-16 h-16 mx-auto mb-4 skeleton" style={{ borderRadius: '50%' }} />
+                    <div className="w-32 h-4 mx-auto skeleton" />
                 </div>
             </div>
         );
@@ -40,15 +50,31 @@ export default function StatsPage() {
     const todayStr = today.toISOString().split('T')[0];
     const todayDayOfWeek = today.getDay();
 
-    // The heatmap shows 28 days ending today
-    // We need to find what day of week the first cell is
     const firstDayOfWeek = ((todayDayOfWeek - 27) % 7 + 7) % 7;
 
-    // Create headers starting from the correct day
     const headers: string[] = [];
     for (let i = 0; i < 7; i++) {
         headers.push(dayNames[(firstDayOfWeek + i) % 7]);
     }
+
+    // Mini bar chart — last 7 days completion
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (6 - i));
+        const dateStr = d.toISOString().split('T')[0];
+        const dayLogs = logs.filter(l => l.date === dateStr);
+        const activeCount = activeHabits.length || 1;
+        const completedCount = activeHabits.filter(h => {
+            const habitLogs = dayLogs.filter(l => l.habitId === h.id);
+            const total = habitLogs.reduce((sum, l) => sum + l.amount, 0);
+            return total >= h.goalAmount;
+        }).length;
+        return {
+            label: d.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0),
+            percentage: Math.round((completedCount / activeCount) * 100),
+            date: dateStr,
+        };
+    });
 
     return (
         <>
@@ -65,9 +91,15 @@ export default function StatsPage() {
                 {/* Main Stats Grid */}
                 <div className="grid grid-cols-2 gap-3 mb-6">
                     <div className="stat-card col-span-2">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mb-3">
                             <div>
-                                <div className="text-sm text-muted mb-1">Success Rate</div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" strokeWidth="2">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                        <polyline points="22,4 12,14.01 9,11.01" />
+                                    </svg>
+                                    <span className="text-sm text-muted">Success Rate</span>
+                                </div>
                                 <div className="stat-value success">{overallStats.successRate}%</div>
                             </div>
                             {overallStats.comparison.vsLastWeek !== 0 && (
@@ -76,26 +108,82 @@ export default function StatsPage() {
                                 </div>
                             )}
                         </div>
+                        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                            {getInsight(overallStats.successRate, overallStats.currentStreak)}
+                        </p>
                     </div>
 
                     <div className="stat-card">
+                        <div className="flex items-center gap-2 mb-2">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-warning)" strokeWidth="2">
+                                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                            </svg>
+                            <span className="text-xs text-muted">Current Streak</span>
+                        </div>
                         <div className="stat-value">{overallStats.currentStreak}</div>
-                        <div className="stat-label">Current Streak</div>
+                        <div className="stat-label">days</div>
                     </div>
 
                     <div className="stat-card">
+                        <div className="flex items-center gap-2 mb-2">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2">
+                                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+                            </svg>
+                            <span className="text-xs text-muted">Best Streak</span>
+                        </div>
                         <div className="stat-value">{overallStats.longestStreak}</div>
-                        <div className="stat-label">Best Streak</div>
+                        <div className="stat-label">days</div>
                     </div>
 
                     <div className="stat-card">
+                        <div className="flex items-center gap-2 mb-2">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" strokeWidth="2">
+                                <polyline points="20,6 9,17 4,12" />
+                            </svg>
+                            <span className="text-xs text-muted">Completed</span>
+                        </div>
                         <div className="stat-value success">{overallStats.totalHabitsCompleted}</div>
-                        <div className="stat-label">Completed</div>
                     </div>
 
                     <div className="stat-card">
+                        <div className="flex items-center gap-2 mb-2">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12,6 12,12 16,14" />
+                            </svg>
+                            <span className="text-xs text-muted">Active</span>
+                        </div>
                         <div className="stat-value">{overallStats.activeHabits}</div>
-                        <div className="stat-label">Active Habits</div>
+                    </div>
+                </div>
+
+                {/* Weekly Bar Chart */}
+                <div className="stat-card mb-6">
+                    <div className="section-title" style={{ marginBottom: '16px' }}>Last 7 Days</div>
+                    <div className="mini-bar-chart" style={{ paddingBottom: '20px' }}>
+                        {last7Days.map((day) => {
+                            const isToday = day.date === todayStr;
+                            return (
+                                <div
+                                    key={day.date}
+                                    className="mini-bar"
+                                    data-label={day.label}
+                                    style={{
+                                        height: `${Math.max(day.percentage, 5)}%`,
+                                        background: day.percentage >= 80
+                                            ? 'linear-gradient(to top, var(--color-success), #6ee7b7)'
+                                            : day.percentage >= 40
+                                                ? 'linear-gradient(to top, var(--color-warning), #fde68a)'
+                                                : day.percentage > 0
+                                                    ? 'linear-gradient(to top, var(--color-danger), #fca5a5)'
+                                                    : 'var(--color-neutral-bg)',
+                                        border: isToday ? '2px solid var(--color-accent)' : 'none',
+                                        boxShadow: day.percentage >= 80 ? '0 0 8px var(--color-success-glow)' : undefined,
+                                    }}
+                                    title={`${day.label}: ${day.percentage}%`}
+                                />
+                            );
+                        })}
                     </div>
                 </div>
 
@@ -115,11 +203,13 @@ export default function StatsPage() {
                                     className="aspect-square rounded-sm"
                                     style={{
                                         background: cell.level === 0 ? 'var(--color-neutral-bg)' :
-                                            cell.level === 1 ? 'rgba(34, 197, 94, 0.2)' :
-                                                cell.level === 2 ? 'rgba(34, 197, 94, 0.4)' :
-                                                    cell.level === 3 ? 'rgba(34, 197, 94, 0.6)' :
+                                            cell.level === 1 ? 'rgba(52, 211, 153, 0.2)' :
+                                                cell.level === 2 ? 'rgba(52, 211, 153, 0.4)' :
+                                                    cell.level === 3 ? 'rgba(52, 211, 153, 0.6)' :
                                                         'var(--color-success)',
-                                        border: isToday ? '2px solid var(--color-accent)' : 'none'
+                                        border: isToday ? '2px solid var(--color-accent)' : 'none',
+                                        borderRadius: 'var(--radius-xs)',
+                                        boxShadow: cell.level >= 4 ? '0 0 6px var(--color-success-glow)' : undefined,
                                     }}
                                     title={`${cellDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}: ${cell.level === 0 ? 'No activity' : `Level ${cell.level}`}`}
                                 />
@@ -135,13 +225,14 @@ export default function StatsPage() {
                             {[0, 1, 2, 3, 4].map((level) => (
                                 <div
                                     key={level}
-                                    className="w-3 h-3 rounded-sm"
+                                    className="w-3 h-3"
                                     style={{
                                         background: level === 0 ? 'var(--color-neutral-bg)' :
-                                            level === 1 ? 'rgba(34, 197, 94, 0.2)' :
-                                                level === 2 ? 'rgba(34, 197, 94, 0.4)' :
-                                                    level === 3 ? 'rgba(34, 197, 94, 0.6)' :
-                                                        'var(--color-success)'
+                                            level === 1 ? 'rgba(52, 211, 153, 0.2)' :
+                                                level === 2 ? 'rgba(52, 211, 153, 0.4)' :
+                                                    level === 3 ? 'rgba(52, 211, 153, 0.6)' :
+                                                        'var(--color-success)',
+                                        borderRadius: 'var(--radius-xs)',
                                     }}
                                 />
                             ))}
@@ -183,9 +274,9 @@ export default function StatsPage() {
                                                 className="habit-progress-fill"
                                                 style={{
                                                     width: `${stats.successRate}%`,
-                                                    background: stats.successRate >= 75 ? 'var(--color-success)' :
-                                                        stats.successRate >= 50 ? 'var(--color-warning)' :
-                                                            'var(--color-danger)'
+                                                    background: stats.successRate >= 75 ? 'linear-gradient(90deg, var(--color-success), #6ee7b7)' :
+                                                        stats.successRate >= 50 ? 'linear-gradient(90deg, var(--color-warning), #fde68a)' :
+                                                            'linear-gradient(90deg, var(--color-danger), #fca5a5)'
                                                 }}
                                             />
                                         </div>
