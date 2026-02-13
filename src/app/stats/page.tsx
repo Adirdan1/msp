@@ -5,6 +5,7 @@ import { useStats } from '@/lib/hooks/useStats';
 import { BottomNav } from '@/components/ui/BottomNav';
 import { PeriodSelector } from '@/components/ui/PeriodSelector';
 import { HabitIconBadge } from '@/components/ui/HabitIcons';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 function getInsight(successRate: number, currentStreak: number): string {
     if (successRate >= 90 && currentStreak >= 7) return "Outstanding consistency! You're in the zone 🏆";
@@ -15,7 +16,7 @@ function getInsight(successRate: number, currentStreak: number): string {
     return "Begin tracking to see your progress here 📊";
 }
 
-export default function StatsPage() {
+function StatsContent() {
     const { habits, logs, isLoading } = useHabits();
     const {
         period,
@@ -302,5 +303,13 @@ export default function StatsPage() {
 
             <BottomNav />
         </>
+    );
+}
+
+export default function StatsPage() {
+    return (
+        <ErrorBoundary>
+            <StatsContent />
+        </ErrorBoundary>
     );
 }

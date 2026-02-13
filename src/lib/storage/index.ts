@@ -19,13 +19,20 @@ export function getHabits(): Habit[] {
     try {
         return JSON.parse(data);
     } catch {
+        console.warn('Habits data was corrupted and has been reset.');
         return [];
     }
 }
 
-export function saveHabits(habits: Habit[]): void {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem(STORAGE_KEYS.HABITS, JSON.stringify(habits));
+export function saveHabits(habits: Habit[]): boolean {
+    if (typeof window === 'undefined') return false;
+    try {
+        localStorage.setItem(STORAGE_KEYS.HABITS, JSON.stringify(habits));
+        return true;
+    } catch (e) {
+        console.error('Failed to save habits (storage may be full):', e);
+        return false;
+    }
 }
 
 export function addHabit(habit: Habit): Habit[] {
@@ -69,13 +76,20 @@ export function getLogs(): HabitLog[] {
     try {
         return JSON.parse(data);
     } catch {
+        console.warn('Logs data was corrupted and has been reset.');
         return [];
     }
 }
 
-export function saveLogs(logs: HabitLog[]): void {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(logs));
+export function saveLogs(logs: HabitLog[]): boolean {
+    if (typeof window === 'undefined') return false;
+    try {
+        localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(logs));
+        return true;
+    } catch (e) {
+        console.error('Failed to save logs (storage may be full):', e);
+        return false;
+    }
 }
 
 export function addLog(log: HabitLog): HabitLog[] {
@@ -146,6 +160,7 @@ export function getSettings(): AppSettings {
     try {
         return { ...DEFAULT_SETTINGS, ...JSON.parse(data) };
     } catch {
+        console.warn('Settings data was corrupted and has been reset to defaults.');
         return DEFAULT_SETTINGS;
     }
 }
@@ -154,7 +169,11 @@ export function saveSettings(settings: Partial<AppSettings>): AppSettings {
     const current = getSettings();
     const updated = { ...current, ...settings };
     if (typeof window !== 'undefined') {
-        localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated));
+        try {
+            localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated));
+        } catch (e) {
+            console.error('Failed to save settings (storage may be full):', e);
+        }
     }
     return updated;
 }

@@ -12,21 +12,35 @@ function SignInContent() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [signInError, setSignInError] = useState<string | null>(null);
 
     const handleCredentialsSignIn = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        await signIn('credentials', {
-            email,
-            password,
-            callbackUrl,
-        });
-        setIsLoading(false);
+        setSignInError(null);
+        try {
+            await signIn('credentials', {
+                email,
+                password,
+                callbackUrl,
+            });
+        } catch {
+            setSignInError('Sign in failed. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleOAuthSignIn = async (provider: string) => {
         setIsLoading(true);
-        await signIn(provider, { callbackUrl });
+        setSignInError(null);
+        try {
+            await signIn(provider, { callbackUrl });
+        } catch {
+            setSignInError(`Could not connect to ${provider}. Please try again.`);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -45,15 +59,16 @@ function SignInContent() {
                 </div>
 
                 {/* Error Message */}
-                {error && (
+                {(error || signInError) && (
                     <div
                         className="mb-4 p-3 rounded-lg text-center text-sm"
                         style={{ background: 'var(--color-danger-bg)', color: 'var(--color-danger)' }}
                     >
-                        {error === 'OAuthSignin' && 'Error connecting to provider'}
-                        {error === 'OAuthCallback' && 'Error during sign in'}
-                        {error === 'Credentials' && 'Invalid email or password'}
-                        {error === 'Default' && 'An error occurred'}
+                        {signInError && signInError}
+                        {!signInError && error === 'OAuthSignin' && 'Error connecting to provider'}
+                        {!signInError && error === 'OAuthCallback' && 'Error during sign in'}
+                        {!signInError && error === 'Credentials' && 'Invalid email or password'}
+                        {!signInError && error === 'Default' && 'An error occurred'}
                     </div>
                 )}
 

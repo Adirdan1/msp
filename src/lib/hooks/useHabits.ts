@@ -25,12 +25,19 @@ export function useHabits() {
 
     // Load data on mount
     useEffect(() => {
-        initializeDemoData();
-        const loadedHabits = getHabits();
-        const loadedLogs = getLogs();
-        setHabits(loadedHabits);
-        setLogs(loadedLogs);
-        setIsLoading(false);
+        try {
+            initializeDemoData();
+            const loadedHabits = getHabits();
+            const loadedLogs = getLogs();
+            setHabits(loadedHabits);
+            setLogs(loadedLogs);
+        } catch (e) {
+            console.error('Failed to load data from storage:', e);
+            setHabits([]);
+            setLogs([]);
+        } finally {
+            setIsLoading(false);
+        }
     }, []);
 
     // Update habitsWithProgress whenever habits or logs change
