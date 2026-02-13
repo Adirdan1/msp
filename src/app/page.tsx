@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useHabits } from '@/lib/hooks/useHabits';
 import { AddHabitModal } from '@/components/habits/AddHabitModal';
+import { EditHabitModal } from '@/components/habits/EditHabitModal';
+import { Habit } from '@/lib/types';
 import { BottomNav } from '@/components/ui/BottomNav';
 import { HabitIconBadge } from '@/components/ui/HabitIcons';
 import { ProgressRing } from '@/components/ui/ProgressRing';
@@ -35,12 +37,14 @@ function HomeContent() {
     habitsWithProgress,
     isLoading,
     addHabit,
+    updateHabit,
     logProgress,
     deleteLogEntry,
     getTodayProgress,
   } = useHabits();
 
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [undoStack, setUndoStack] = useState<string[]>([]);
   const [showUndo, setShowUndo] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -226,9 +230,21 @@ function HomeContent() {
                   >
                     <HabitIconBadge name={habit.name} color={habit.color} size="md" />
 
-                    <div className="flex-1 min-w-0">
+                    <div
+                      className="flex-1 min-w-0"
+                      onClick={editMode ? () => setEditingHabit(habit) : undefined}
+                      style={editMode ? { cursor: 'pointer' } : undefined}
+                    >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-medium truncate">{habit.name}</span>
+                        <span className="font-medium truncate">
+                          {habit.name}
+                          {editMode && (
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-warning)" strokeWidth="2" className="inline ml-1" style={{ verticalAlign: 'middle' }}>
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                          )}
+                        </span>
                         <span className="text-sm font-mono text-muted ml-2">
                           {habit.progress}/{habit.target} {habit.unit}
                         </span>
@@ -325,9 +341,21 @@ function HomeContent() {
                     >
                       <HabitIconBadge name={habit.name} color={habit.color} size="md" />
 
-                      <div className="flex-1 min-w-0">
+                      <div
+                        className="flex-1 min-w-0"
+                        onClick={editMode ? () => setEditingHabit(habit) : undefined}
+                        style={editMode ? { cursor: 'pointer' } : undefined}
+                      >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="font-medium truncate">{habit.name}</span>
+                          <span className="font-medium truncate">
+                            {habit.name}
+                            {editMode && (
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-warning)" strokeWidth="2" className="inline ml-1" style={{ verticalAlign: 'middle' }}>
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                              </svg>
+                            )}
+                          </span>
                           <span className="text-sm font-mono text-muted ml-2">
                             {habit.progress}/{habit.target} {habit.unit}
                           </span>
@@ -449,6 +477,17 @@ function HomeContent() {
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onAdd={addHabit}
+      />
+
+      {/* Edit Habit Modal */}
+      <EditHabitModal
+        isOpen={!!editingHabit}
+        onClose={() => setEditingHabit(null)}
+        habit={editingHabit}
+        onSave={(habitId, updates) => {
+          updateHabit(habitId, updates);
+          setEditingHabit(null);
+        }}
       />
 
       {/* Undo Toast */}

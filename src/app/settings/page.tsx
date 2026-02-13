@@ -6,9 +6,12 @@ import { BottomNav } from '@/components/ui/BottomNav';
 import { HabitIconBadge } from '@/components/ui/HabitIcons';
 import { getSettings, saveSettings, AppSettings } from '@/lib/storage';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { EditHabitModal } from '@/components/habits/EditHabitModal';
+import { Habit } from '@/lib/types';
 
 function SettingsContent() {
-    const { habits, deleteHabit, toggleHabit } = useHabits();
+    const { habits, deleteHabit, toggleHabit, updateHabit } = useHabits();
+    const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
     const [settings, setSettings] = useState<AppSettings>({
         theme: 'dark',
         hapticFeedback: true,
@@ -178,6 +181,17 @@ function SettingsContent() {
 
                                         <div className="flex items-center gap-2">
                                             <button
+                                                onClick={() => setEditingHabit(habit)}
+                                                className="btn btn-icon btn-sm btn-ghost"
+                                                style={{ color: 'var(--color-warning)' }}
+                                                title="Edit habit"
+                                            >
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                                </svg>
+                                            </button>
+                                            <button
                                                 onClick={() => toggleHabit(habit.id)}
                                                 className={`btn btn-icon btn-sm ${habit.isActive ? 'btn-success' : 'btn-secondary'}`}
                                                 title={habit.isActive ? 'Pause habit' : 'Resume habit'}
@@ -249,6 +263,17 @@ function SettingsContent() {
                     </div>
                 </section>
             </div>
+
+            {/* Edit Habit Modal */}
+            <EditHabitModal
+                isOpen={!!editingHabit}
+                onClose={() => setEditingHabit(null)}
+                habit={editingHabit}
+                onSave={(habitId, updates) => {
+                    updateHabit(habitId, updates);
+                    setEditingHabit(null);
+                }}
+            />
 
             {/* Delete Confirmation Modal */}
             {showConfirmDelete && (
