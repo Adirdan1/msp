@@ -236,7 +236,7 @@ function SettingsContent() {
                                         borderRadius: 'var(--radius-full)',
                                     }}
                                 >
-                                    v2.0.1
+                                    v2.0.2
                                 </span>
                             </div>
                         </div>
