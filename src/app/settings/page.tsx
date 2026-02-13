@@ -5,8 +5,9 @@ import { useHabits } from '@/lib/hooks/useHabits';
 import { BottomNav } from '@/components/ui/BottomNav';
 import { HabitIconBadge } from '@/components/ui/HabitIcons';
 import { getSettings, saveSettings, AppSettings } from '@/lib/storage';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
-export default function SettingsPage() {
+function SettingsContent() {
     const { habits, deleteHabit, toggleHabit } = useHabits();
     const [settings, setSettings] = useState<AppSettings>({
         theme: 'dark',
@@ -290,5 +291,13 @@ export default function SettingsPage() {
 
             <BottomNav />
         </>
+    );
+}
+
+export default function SettingsPage() {
+    return (
+        <ErrorBoundary>
+            <SettingsContent />
+        </ErrorBoundary>
     );
 }

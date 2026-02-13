@@ -229,7 +229,10 @@ export function LogEntryModal({ isOpen, onClose, habit, date, logs, onLogProgres
                                                 <div>
                                                     <span className="font-mono font-medium">{log.amount} {habit.unit}</span>
                                                     <span className="text-muted text-xs ml-2">
-                                                        {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        {(() => {
+                                                            const d = new Date(log.createdAt);
+                                                            return isNaN(d.getTime()) ? '' : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                                        })()}
                                                     </span>
                                                 </div>
                                                 <div className="flex gap-1">

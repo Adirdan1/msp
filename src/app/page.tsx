@@ -9,6 +9,7 @@ import { ProgressRing } from '@/components/ui/ProgressRing';
 import { StreakCelebration } from '@/components/ui/StreakCelebration';
 import { getSettings, AppSettings } from '@/lib/storage';
 import { formatDate, getToday } from '@/lib/utils/dates';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -28,7 +29,7 @@ function getMotivation(progress: number): string {
   return "Ready to build your success today? 🚀";
 }
 
-export default function HomePage() {
+function HomeContent() {
   const {
     habits,
     habitsWithProgress,
@@ -486,5 +487,13 @@ export default function HomePage() {
 
       <BottomNav />
     </>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <ErrorBoundary>
+      <HomeContent />
+    </ErrorBoundary>
   );
 }

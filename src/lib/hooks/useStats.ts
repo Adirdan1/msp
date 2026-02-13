@@ -10,28 +10,47 @@ export function useStats(habits: Habit[], logs: HabitLog[]) {
 
     // Calculate overall stats for current period
     const overallStats = useMemo<OverallStats>(() => {
-        return calculateOverallStats(habits, logs, period);
+        try {
+            return calculateOverallStats(habits, logs, period);
+        } catch (e) {
+            console.error('Failed to calculate overall stats:', e);
+            return { successRate: 0, currentStreak: 0, longestStreak: 0, totalHabitsCompleted: 0, activeHabits: 0, comparison: { vsLastWeek: 0, vsLastMonth: 0, direction: 'same' as const } };
+        }
     }, [habits, logs, period]);
 
     // Calculate individual habit stats
     const habitStats = useMemo<Map<string, HabitStats>>(() => {
         const statsMap = new Map<string, HabitStats>();
         habits.filter(h => h.isActive).forEach(habit => {
-            statsMap.set(habit.id, calculateHabitStats(habit, logs, period));
+            try {
+                statsMap.set(habit.id, calculateHabitStats(habit, logs, period));
+            } catch (e) {
+                console.error(`Failed to calculate stats for habit ${habit.name}:`, e);
+            }
         });
         return statsMap;
     }, [habits, logs, period]);
 
     // Get heatmap data (always 28 days for good visualization)
     const heatmapData = useMemo(() => {
-        return getHeatmapData(habits, logs, 28);
+        try {
+            return getHeatmapData(habits, logs, 28);
+        } catch (e) {
+            console.error('Failed to generate heatmap data:', e);
+            return [];
+        }
     }, [habits, logs]);
 
     // Get daily progress for the period
     const dailyProgressData = useMemo(() => {
-        const { start, end } = getDateRange(period);
-        const dates = getDatesBetween(start, end);
-        return dates.map(date => getDailyProgress(habits, logs, date));
+        try {
+            const { start, end } = getDateRange(period);
+            const dates = getDatesBetween(start, end);
+            return dates.map(date => getDailyProgress(habits, logs, date));
+        } catch (e) {
+            console.error('Failed to calculate daily progress:', e);
+            return [];
+        }
     }, [habits, logs, period]);
 
     // Chart data for trend visualization

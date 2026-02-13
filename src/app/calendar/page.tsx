@@ -7,8 +7,9 @@ import { LogEntryModal } from '@/components/calendar/LogEntryModal';
 import { BottomNav } from '@/components/ui/BottomNav';
 import { getToday, addDays } from '@/lib/utils/dates';
 import { Habit, HabitLog } from '@/lib/types';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
-export default function CalendarPage() {
+function CalendarContent() {
     const {
         habits,
         logs,
@@ -177,5 +178,13 @@ export default function CalendarPage() {
 
             <BottomNav />
         </>
+    );
+}
+
+export default function CalendarPage() {
+    return (
+        <ErrorBoundary>
+            <CalendarContent />
+        </ErrorBoundary>
     );
 }
